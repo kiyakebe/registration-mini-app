@@ -107,6 +107,7 @@ export default function page() {
               await updateDoc(doc.ref, { telegram_id: telegramId });
             }
           });
+          console.log("userid:", telegramId);
           setDisplayData("You have already registered");
         } else {
           setDisplayData(
