@@ -83,7 +83,7 @@ export default function page() {
           setDisplayData("You have already registered");
         } else {
           setDisplayData(
-            "You haven't registered <br/> PLease contact: 0909090909"
+            "You haven't registered <br/> Please contact: 0909090909"
           );
 
           // console.log("No matching documents found.");
@@ -100,17 +100,17 @@ export default function page() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
       <div className="space-y-6">
         {displayData && (
-          <Card className="p-6">
+          <Card className="p-6 bg-gray-800 text-white">
             <h2
               className="text-sl"
               dangerouslySetInnerHTML={{ __html: displayData }}
             ></h2>
           </Card>
         )}
-        <Card className="w-[350px]">
+        <Card className="w-[350px] bg-gray-800 text-white">
           <CardHeader>
             <CardTitle>Register Phone Number</CardTitle>
             <CardDescription>
@@ -130,13 +130,21 @@ export default function page() {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="+1234567890" {...field} />
+                        <Input
+                          placeholder="+1234567890"
+                          {...field}
+                          className="bg-gray-700 text-white"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={isLoading}
+                >
                   {isLoading ? "Checking..." : "Check Registration"}
                 </Button>
               </form>
