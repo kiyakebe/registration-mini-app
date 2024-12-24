@@ -68,10 +68,19 @@ export default function page() {
     initializeFirebase();
 
     //  telegram integration
-    if (typeof window !== "undefined" && window?.Telegram?.WebApp) {
+    if (
+      typeof window !== "undefined" &&
+      window.Telegram &&
+      window.Telegram.WebApp
+    ) {
       const tg = window.Telegram.WebApp;
+      tg.ready();
       const telegramId = tg.initDataUnsafe?.user?.id;
-      setTelegramId(telegramId);
+      if (telegramId) {
+        setTelegramId(telegramId);
+      } else {
+        console.warn("Telegram user ID is not available.");
+      }
     } else {
       console.warn("Telegram WebApp is not available.");
     }
@@ -110,9 +119,9 @@ export default function page() {
           console.log("userid:", telegramId);
           setDisplayData("You have already registered");
         } else {
-          setDisplayData(
-            "You haven't registered <br/> Please contact: 0909090909"
-          );
+            setDisplayData(
+            "You haven't registered <br/> Please contact: <a href='tel:0909090909'>0909090909</a>"
+            );
 
           // console.log("No matching documents found.");
         }
