@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+// Extend the Window interface to include the Telegram property
+declare global {
+  interface Window {
+    Telegram: {
+      WebApp: any;
+    };
+  }
+}
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -27,6 +37,7 @@ import {
   where,
   getDocs,
   Firestore,
+  updateDoc,
 } from "firebase/firestore";
 import { initFirebase } from "@/firabase/clientApp";
 
@@ -47,6 +58,7 @@ export default function page() {
   const [isLoading, setIsLoading] = useState(false);
   const [displayData, setDisplayData] = useState("");
   const [db, setDb] = useState<Firestore | null>(null);
+  const [telegramId, setTelegramId] = useState("");
 
   useEffect(() => {
     const initializeFirebase = async () => {
@@ -54,6 +66,15 @@ export default function page() {
       setDb(db);
     };
     initializeFirebase();
+
+    //  telegram integration
+    if (typeof window !== "undefined" && window?.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp;
+      const telegramId = tg.initDataUnsafe?.user?.id;
+      setTelegramId(telegramId);
+    } else {
+      console.warn("Telegram WebApp is not available.");
+    }
   }, []);
 
   // Initialize the form with React Hook Form and Zod resolver
@@ -80,6 +101,12 @@ export default function page() {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
+          querySnapshot.forEach(async (doc) => {
+            const data = doc.data();
+            if (!data.telegram_id && telegramId) {
+              await updateDoc(doc.ref, { telegram_id: telegramId });
+            }
+          });
           setDisplayData("You have already registered");
         } else {
           setDisplayData(
