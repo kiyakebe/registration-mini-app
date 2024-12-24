@@ -47,6 +47,7 @@ const formSchema = z.object({
 export default function page() {
   const [isLoading, setIsLoading] = useState(false);
   const [db, setDb] = useState<Firestore | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const initializeFirebase = async () => {
@@ -80,21 +81,25 @@ export default function page() {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          // console.log("success")
+          querySnapshot.forEach((doc) => {
+            console.log("Document found:", doc.data());
+          });
+          console.log("success")
         } else {
-          // console.log("No matching documents found.");
+          console.log("No matching documents found.");
         }
 
         setIsLoading(false);
       } else {
         setIsLoading(false);
+
       }
     } catch (error) {
       setIsLoading(false);
 
       // console.log("Error:", error);
 
-      console.log("Error:", error);
+      console.log("Error:", error)
     }
   }
 
