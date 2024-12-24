@@ -21,7 +21,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
 import {
   collection,
   query,
@@ -46,8 +45,8 @@ const formSchema = z.object({
 
 export default function page() {
   const [isLoading, setIsLoading] = useState(false);
+  const [displayData, setDisplayData] = useState("");
   const [db, setDb] = useState<Firestore | null>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     const initializeFirebase = async () => {
@@ -81,60 +80,70 @@ export default function page() {
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          querySnapshot.forEach((doc) => {
-            console.log("Document found:", doc.data());
-          });
-          console.log("success")
+          setDisplayData("You have already registered");
         } else {
-          console.log("No matching documents found.");
+          setDisplayData(
+            "You haven't registered <br/> PLease contact: 0909090909"
+          );
+
+          // console.log("No matching documents found.");
         }
 
         setIsLoading(false);
       } else {
         setIsLoading(false);
-
       }
     } catch (error) {
       setIsLoading(false);
-
-      // console.log("Error:", error);
-
-      console.log("Error:", error)
+      setDisplayData("An error occured! PLease try again later");
     }
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-[350px]">
-        <CardHeader>
-          <CardTitle>Register Phone Number</CardTitle>
-          <CardDescription>
-            Enter your phone number to register.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="+1234567890" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Checking..." : "Check Registration"}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        {displayData && (
+          <Card className="p-6">
+            <h2
+              className="text-sl"
+              dangerouslySetInnerHTML={{ __html: displayData }}
+            ></h2>
+          </Card>
+        )}
+        <Card className="w-[350px]">
+          <CardHeader>
+            <CardTitle>Register Phone Number</CardTitle>
+            <CardDescription>
+              Enter your phone number to register.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-8"
+              >
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+1234567890" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Checking..." : "Check Registration"}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
